@@ -239,7 +239,7 @@ def admin_panel(message):
     user_id = message.from_user.id
     checker = 305896408
     types.ReplyKeyboardRemove()
-    if user_id == checker:
+    if user_id == checker or user_id == 575148251 or user_id == 3356664:
         bot.send_message(user_id, "Админ панель. Выберите действие",
                          reply_markup=bt.main_admin_menu())
     else:
