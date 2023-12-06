@@ -28,12 +28,14 @@ def start_message(message):
 
 @bot.callback_query_handler(lambda call: call.data in ["instruction", "transaction", "accept",
                                                        "delete", "no_delete", "yes_delete", "mailing",
-                                                       "send_message", "change", "end_tr"])
+                                                       "send_message", "change", "end_tr", "main menu"])
 def calling(call):
     user_id = call.message.chat.id
     if call.data == "instruction":
         bot.delete_message(user_id, call.message.message_id)
         bot.send_message(user_id, "ссылка на видео")
+    elif call.data == "main menu":
+        return start_message(call)
     elif call.data == "transaction":
         bot.delete_message(user_id, call.message.message_id)
         bot.send_message(user_id, "Какую сумму вы хотите перевести?", reply_markup=bt.main_menu_reply_kb())
@@ -61,7 +63,7 @@ def calling(call):
             return start_message(call)
     elif call.data == "mailing":
         bot.delete_message(user_id, call.message.message_id)
-        bot.send_message(user_id, "Введите текст рассылки, либо отмените рассылку через кнопку в меню",
+        bot.send_message(user_id, "Введите текст рассылки или отправьте фотографию с описанием, либо отмените рассылку через кнопку в меню",
                          reply_markup=bt.canceling())
         bot.register_next_step_handler(call.message, mailing_to_all)
     elif call.data == "send_message":
@@ -178,6 +180,11 @@ def get_photo(message):
                                                                f"Зарегестрированная сумма перевода: {information[2]}\n"
                                                                f"Номер карты: <code>{information[3]}</code>",
                                parse_mode="html")
+                bot.send_photo(575148251, photo=photo, caption=f"<b>Заявка № {information[0]}</b>\n"
+                                                               f"tg ID клиента: <code>{information[1]}</code>\n"
+                                                               f"Зарегестрированная сумма перевода: {information[2]}\n"
+                                                               f"Номер карты: <code>{information[3]}</code>",
+                               parse_mode="html")
             except:
                 pass
         except:
@@ -210,7 +217,8 @@ def get_cardnum(message, money):
                 bot.send_message(user_id, f"Заявка принята. Переведите указанную вами сумму на карту "
                                           f"сбербанка(кликните, чтобы скопировать) <code>{card}</code>, "
                                           f"затем отправьте скриншот перевода в качестве подтверждения\n"
-                                          f"Перевод можно подтвердить в главном меню", parse_mode="html")
+                                          f"Перевод можно подтвердить в главном меню", parse_mode="html",
+                                 reply_markup=bt.main_menu_call_kb())
                 db.register_transaction(user_id, money, cardnum)
             except:
                 bot.send_message(user_id, "Ошибка. Повторите заново")

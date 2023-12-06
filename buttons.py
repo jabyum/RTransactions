@@ -47,3 +47,8 @@ def accept(id):
     answer = InlineKeyboardButton(text="Написать пользователю", callback_data="send_message")
     kb.row(copy)
     return kb
+def main_menu_call_kb():
+    kb = InlineKeyboardMarkup(row_width=1)
+    mm = InlineKeyboardButton(text="Главное меню", callback_data="main menu")
+    kb.row(mm)
+    return kb
