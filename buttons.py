@@ -1,8 +1,8 @@
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 def main_menu(check):
     kb = InlineKeyboardMarkup(row_width=1)
-    instruction = InlineKeyboardButton(text="Видео-инструкция", callback_data="instruction")
-    transaction = InlineKeyboardButton(text="Совершить перевод", callback_data="transaction")
+    instruction = InlineKeyboardButton(text="📹 Видео-инструкция", callback_data="instruction")
+    transaction = InlineKeyboardButton(text="💸 Совершить перевод", callback_data="transaction")
     accept = InlineKeyboardButton(text="☑️ Подтвердить перевод", callback_data="accept")
     delete_trans = InlineKeyboardButton(text="❌ Удалить заявку", callback_data="delete")
     kb.row(instruction)
@@ -24,10 +24,10 @@ def delete_registration_kb():
     return kb
 def main_admin_menu():
     kb = InlineKeyboardMarkup(row_width=1)
-    mailing = InlineKeyboardButton(text="Создать рассылку", callback_data="mailing")
-    msg = InlineKeyboardButton(text="Написать пользователю", callback_data="send_message")
-    end = InlineKeyboardButton(text="Завершить перевод", callback_data="end_tr")
-    card = InlineKeyboardButton(text="Поменять карту 💳", callback_data="change")
+    mailing = InlineKeyboardButton(text="📤 Создать рассылку", callback_data="mailing")
+    msg = InlineKeyboardButton(text="👤 Написать пользователю", callback_data="send_message")
+    end = InlineKeyboardButton(text="🤝 Завершить перевод", callback_data="end_tr")
+    card = InlineKeyboardButton(text="💳 Поменять карту ", callback_data="change")
     close = InlineKeyboardButton(text="Закрыть", callback_data="close")
     kb.row(mailing)
     kb.row(msg)
