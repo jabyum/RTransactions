@@ -30,7 +30,7 @@ def start_message(message):
 @bot.callback_query_handler(lambda call: call.data in ["instruction", "transaction", "accept",
                                                        "delete", "no_delete", "yes_delete", "mailing",
                                                        "send_message", "change", "end_tr", "main menu",
-                                                       "check menu"])
+                                                       "check menu", "close"])
 def calling(call):
     user_id = call.message.chat.id
     if call.data == "instruction":
@@ -40,6 +40,8 @@ def calling(call):
         bot.delete_message(user_id, call.message.message_id)
         bot.send_message(user_id, "Вы успешно подписались ✅")
         return start_message(call)
+    elif call.data == "close":
+        bot.delete_message(user_id, call.message.message_id)
     elif call.data == "main menu":
         return start_message(call)
     elif call.data == "transaction":
