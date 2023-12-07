@@ -22,18 +22,24 @@ def start_message(message):
             bot.delete_message(user_id, mm.message_id)
             bot.send_message(user_id, "Выберите действие", reply_markup=bt.main_menu(check))
         else:
-            bot.send_message(user_id, "Подпишитесь на канал,чтобы пользоваться ботом \nhttps://t.me/russiantransaction")
+            bot.send_message(user_id, "Подпишитесь на канал,чтобы пользоваться ботом \nhttps://t.me/russiantransaction",
+                             reply_markup=bt.check_menu_call_kb())
     except:
         pass
 
 @bot.callback_query_handler(lambda call: call.data in ["instruction", "transaction", "accept",
                                                        "delete", "no_delete", "yes_delete", "mailing",
-                                                       "send_message", "change", "end_tr", "main menu"])
+                                                       "send_message", "change", "end_tr", "main menu",
+                                                       "check menu"])
 def calling(call):
     user_id = call.message.chat.id
     if call.data == "instruction":
         bot.delete_message(user_id, call.message.message_id)
         bot.send_message(user_id, "ссылка на видео")
+    elif call.data == "check menu":
+        bot.delete_message(user_id, call.message.message_id)
+        bot.send_message(user_id, "Вы успешно подписались ✅")
+        return start_message(call)
     elif call.data == "main menu":
         return start_message(call)
     elif call.data == "transaction":
@@ -42,7 +48,7 @@ def calling(call):
         bot.register_next_step_handler(call.message, get_sum)
     elif call.data == "accept":
         bot.delete_message(user_id, call.message.message_id)
-        bot.send_message(user_id, "Отправьте скриншот/фото подтверждения перевода", reply_markup=bt.main_menu_reply_kb())
+        bot.send_message(user_id, "↗️ Отправьте скриншот/фото подтверждения перевода", reply_markup=bt.main_menu_reply_kb())
         bot.register_next_step_handler(call.message, get_photo)
     elif call.data == "delete":
         bot.delete_message(user_id, call.message.message_id)
@@ -59,7 +65,7 @@ def calling(call):
             start_message(call)
         except:
             bot.delete_message(user_id, call.message.message_id)
-            bot.send_message(user_id, "Произошла ошибка. Обратиться в службу поддержки")
+            bot.send_message(user_id, "❗️ Произошла ошибка. Обратиться в службу поддержки ❗️")
             return start_message(call)
     elif call.data == "mailing":
         bot.delete_message(user_id, call.message.message_id)
@@ -74,7 +80,7 @@ def calling(call):
     elif call.data == "change":
         bot.delete_message(user_id, call.message.message_id)
         actual_card = db.get_card()
-        bot.send_message(user_id, f"Акутальная карта на данный момент:{actual_card}\n\n"
+        bot.send_message(user_id, f"Акутальная карта на данный момент: 💳 {actual_card}\n\n"
                                   f"Введите номер новой карты или нажмите кнопку отмены",
                          reply_markup=bt.canceling())
         bot.register_next_step_handler(call.message, get_new_card)
@@ -90,7 +96,7 @@ def get_id_end(message):
     else:
         try:
             user_id = int(message.text)
-            bot.send_message(admin_id, "Отправьте фото потверждения перевода", reply_markup=bt.canceling())
+            bot.send_message(admin_id, "Отправьте фото потверждения перевода ↗️", reply_markup=bt.canceling())
             bot.register_next_step_handler(message, get_photo_end, user_id)
         except:
             bot.send_message(admin_id, "Неправильный айди", reply_markup=types.ReplyKeyboardRemove())
@@ -101,7 +107,7 @@ def get_photo_end(message, user_id):
     elif message.photo:
         photo = message.photo[-1].file_id
         bot.send_photo(user_id, photo=photo, caption=message.caption)
-        bot.send_message(admin_id, "Перевод подтвержден. Заявка удалена", reply_markup=types.ReplyKeyboardRemove())
+        bot.send_message(admin_id, "Перевод подтвержден ✅. Заявка удалена", reply_markup=types.ReplyKeyboardRemove())
         db.delete_transaction(user_id)
     else:
         text = message.text
@@ -121,7 +127,7 @@ def get_new_card(message):
             new_card = message.text
             db.delete_card()
             db.reg_card(new_card)
-            bot.send_message(admin_id, f"Вы поменяли номер карты. Новый номер: {new_card}", reply_markup=types.ReplyKeyboardRemove())
+            bot.send_message(admin_id, f"Вы поменяли номер карты. Новый номер: 💳 {new_card}", reply_markup=types.ReplyKeyboardRemove())
         except:
             bot.send_message(admin_id, "Ошибка", reply_markup=types.ReplyKeyboardRemove())
 
@@ -170,29 +176,29 @@ def get_photo(message):
             bot.send_message(user_id, "Подтверждение отправлено. Ждите ответа",
                              reply_markup=types.ReplyKeyboardRemove())
             bot.send_photo(305896408, photo=photo, caption=f"<b>Заявка № {information[0]}</b>\n"
-                                                           f"tg ID клиента: <code>{information[1]}</code>\n"
-                                                           f"Зарегестрированная сумма перевода: {information[2]}\n"
-                                                           f"Номер карты: <code>{information[3]}</code>",
+                                                           f"🆔 клиента: <code>{information[1]}</code>\n"
+                                                           f"💵 Зарегестрированная сумма перевода: {information[2]}\n"
+                                                           f"💳 Номер карты: <code>{information[3]}</code>",
                            parse_mode="html")
             try:
                 bot.send_photo(3356664, photo=photo, caption=f"<b>Заявка № {information[0]}</b>\n"
-                                                               f"tg ID клиента: <code>{information[1]}</code>\n"
-                                                               f"Зарегестрированная сумма перевода: {information[2]}\n"
-                                                               f"Номер карты: <code>{information[3]}</code>",
+                                                               f"🆔 клиента: <code>{information[1]}</code>\n"
+                                                               f"💵 Зарегестрированная сумма перевода: {information[2]}\n"
+                                                               f"💳 Номер карты: <code>{information[3]}</code>",
                                parse_mode="html")
             except:
                 pass
 
             try:
                 bot.send_photo(575148251, photo=photo, caption=f"<b>Заявка № {information[0]}</b>\n"
-                                                               f"tg ID клиента: <code>{information[1]}</code>\n"
-                                                               f"Зарегестрированная сумма перевода: {information[2]}\n"
-                                                               f"Номер карты: <code>{information[3]}</code>",
+                                                               f"🆔 клиента: <code>{information[1]}</code>\n"
+                                                               f"💵 Зарегестрированная сумма перевода: {information[2]}\n"
+                                                               f"💳 Номер карты: <code>{information[3]}</code>",
                                parse_mode="html")
             except:
                 pass
         except:
-            bot.send_message(user_id, "Ошибка. Повторите заново")
+            bot.send_message(user_id, "❗️ Ошибка. Повторите заново ❗️")
     elif message.text == "Главное меню":
         start_message(message)
     else:
@@ -204,7 +210,7 @@ def get_sum(message):
     if money == "Главное меню":
         start_message(message)
     else:
-        bot.send_message(user_id, "Отправьте номер карты получателя", reply_markup=bt.main_menu_reply_kb())
+        bot.send_message(user_id, "💳 Отправьте номер карты получателя", reply_markup=bt.main_menu_reply_kb())
         bot.register_next_step_handler(message, get_cardnum, money)
 def get_cardnum(message, money):
     user_id = message.from_user.id
@@ -218,14 +224,14 @@ def get_cardnum(message, money):
         else:
             try:
                 card = db.get_card()
-                bot.send_message(user_id, f"Заявка принята. Переведите указанную вами сумму на карту "
-                                          f"сбербанка(кликните, чтобы скопировать) <code>{card}</code>, "
+                bot.send_message(user_id, f"Заявка принята✅.\n Переведите указанную вами сумму на карту "
+                                          f"сбербанка(кликните, чтобы скопировать) 💳 <code>{card}</code>, "
                                           f"затем отправьте скриншот перевода в качестве подтверждения\n"
-                                          f"Перевод можно подтвердить в главном меню", parse_mode="html",
+                                          f"Перевод можно подтвердить в главном меню ⬇️", parse_mode="html",
                                  reply_markup=bt.main_menu_call_kb())
                 db.register_transaction(user_id, money, cardnum)
             except:
-                bot.send_message(user_id, "Ошибка. Повторите заново")
+                bot.send_message(user_id, "❗️ Ошибка. Повторите заново ❗️")
 def send_answer(message):
     admin_id = message.from_user.id
     if message.text == "Отмена❌":
